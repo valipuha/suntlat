@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Slideshow</title>
+    <title>Dynamic Image Slideshow</title>
     <style>
         body {
             display: flex;
@@ -15,14 +15,16 @@
         }
         .slideshow {
             position: relative;
-            width: 600px; /* Set your desired width */
-            height: 400px; /* Set your desired height */
+            width: 80%;
+            max-width: 800px;
+            height: 60%;
             overflow: hidden;
         }
         .slide {
             position: absolute;
             width: 100%;
             height: 100%;
+            object-fit: cover;
             opacity: 0;
             transition: opacity 1s;
         }
@@ -33,25 +35,36 @@
 </head>
 <body>
 
-<div class="slideshow">
-    <img class="slide active" src="image1.jpg" alt="Image 1">
-    <img class="slide" src="image2.jpg" alt="Image 2">
-    <img class="slide" src="image3.jpg" alt="Image 3">
-</div>
+<div class="slideshow" id="slideshow"></div>
 
 <script>
-    let currentIndex = 0;
-    const slides = document.querySelectorAll('.slide');
-    
-    function showSlide(index) {
-        slides[currentIndex].classList.remove('active');
-        currentIndex = (index + slides.length) % slides.length;
-        slides[currentIndex].classList.add('active');
-    }
+    const slideshow = document.getElementById('slideshow');
 
-    setInterval(() => {
-        showSlide(currentIndex + 1);
-    }, 2000); // Change slide every 2 seconds
+    fetch('/api/images')
+        .then(response => response.json())
+        .then(images => {
+            images.forEach((image, index) => {
+                const img = document.createElement('img');
+                img.className = 'slide' + (index === 0 ? ' active' : '');
+                img.src = `/images/${image}`;
+                img.alt = `Image ${index + 1}`;
+                slideshow.appendChild(img);
+            });
+
+            let currentIndex = 0;
+            const slides = document.querySelectorAll('.slide');
+
+            function showSlide(index) {
+                slides[currentIndex].classList.remove('active');
+                currentIndex = (index + slides.length) % slides.length;
+                slides[currentIndex].classList.add('active');
+            }
+
+            setInterval(() => {
+                showSlide(currentIndex + 1);
+            }, 2000); // Change slide every 2 seconds
+        })
+        .catch(err => console.error(err));
 </script>
 
 </body>
