@@ -1,1 +1,1 @@
-slaba grasa n uimiim pasa
+# Sunt mai lat ca tactu
